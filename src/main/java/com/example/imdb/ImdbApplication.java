@@ -1,12 +1,12 @@
 package com.example.imdb;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.ResourceAccessException;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,11 +24,28 @@ public class ImdbApplication {
 	private FilmRepository filmRepo;
 
 	@Autowired
-	private CategoryRepository categoryRepository;
+	private CategoryRepository categoryRepo;
 
-	public ImdbApplication(ActorRepository actorRepo, FilmRepository filmRepo) {
+	@Autowired
+	private CustomerRepository customerRepo;
+
+	@Autowired
+	private AddressRepository addressRepo;
+
+	@Autowired
+	private StaffRepository staffRepo;
+
+	@Autowired
+	private StoreRepository storeRepo;
+
+	public ImdbApplication(ActorRepository actorRepo, FilmRepository filmRepo, CategoryRepository categoryRepo, CustomerRepository customerRepo, AddressRepository addressRepo, StoreRepository storeRepo, StaffRepository staffRepo) {
 		this.actorRepo = actorRepo;
 		this.filmRepo = filmRepo;
+		this.categoryRepo = categoryRepo;
+		this.customerRepo = customerRepo;
+		this.addressRepo = addressRepo;
+		this.storeRepo = storeRepo;
+		this.staffRepo = staffRepo;
 	}
 
 	public static void main(String[] args) {
@@ -90,25 +107,86 @@ public class ImdbApplication {
 		return actorsInFilm;
 	}
 
-	@GetMapping("category/{id}")
+	@GetMapping("categoryByID/{id}")
 	public Set<Film> getFilmsInCategory(@PathVariable("id") Integer categoryID) {
-		Category category = categoryRepository.findById(categoryID).orElseThrow(() -> new ResourceAccessException("Category Not Found"));
+		Category category = categoryRepo.findById(categoryID).orElseThrow(() -> new ResourceAccessException("Category Not Found"));
 		return (category.getFilms());
 	}
 
-	@GetMapping("category/{category_name")
-	public Set<Film> getFilmsInCategoryByName(@PathVariable("category_name") String categoryName) {
+	@GetMapping("getFilmsInCategoryByApplication/{category_name}")
+	public Set<Film> getFilmsInCategoryByApplication(@PathVariable("category_name") String categoryName) {
 		int chosenCategoryID=0;
 		List<Category> categories = new ArrayList<>();
-		categories = categoryRepository.findAll();
+		categories = categoryRepo.findAll();
 		for (Category category : categories) {
 			if (categoryName.equals(category.getCategoryName())) {
 				chosenCategoryID = category.getCategoryID();
 				break;
 			}
 		}
-		Category category = categoryRepository.findById(chosenCategoryID).orElseThrow(() -> new ResourceAccessException("Category Not Found"));
+		Category category = categoryRepo.findById(chosenCategoryID).orElseThrow(() -> new ResourceAccessException("Category Not Found"));
 		return (category.getFilms());
 	}
 
+	@GetMapping("getFilmsInCategoryByQuery/{category}")
+	public List<Film> getFilmsInCategoryByQuery(@PathVariable("category") String category) {
+		return (filmRepo.getFilmsInCategory(category));
+	}
+
+//	@JsonView(Views.Public.class)
+	@GetMapping("getAllCustomer")
+	public Iterable<Customer> getAllCustomer() {
+		return customerRepo.findAll();
+	}
+
+	@GetMapping("getAllAddress")
+	public Iterable<Address> getAllAddress() {
+		return addressRepo.findAll();
+	}
+
+	@GetMapping("getAddressByName/{first_name}_{last_name}")
+	public Address getAddressByName(@PathVariable("first_name") String firstName, @PathVariable("last_name") String lastName) {
+		return addressRepo.findAddressByCustomerFirstNameAndLastName(firstName,lastName);
+	}
+
+	@PostMapping("addAddress")
+	public Address addAddress(@RequestBody Address address) {
+		Address newAddress = new Address();
+		newAddress.setAddress(address.getAddress());
+		newAddress.setDistrict(address.getDistrict());
+		newAddress.setPostalCode(address.getPostalCode());
+		newAddress.setCityID(address.getCityID());
+		newAddress.setPhone(address.getPhone());
+		Address addressSaved = addressRepo.save(newAddress);
+		return addressSaved;
+	}
+
+	@PostMapping("addCustomer")
+	public Customer addCustomer(@RequestBody Customer customer) {
+		Customer newCustomer = new Customer();
+//		newCustomer.setStoreID(customer.getStoreID());
+		newCustomer.setFirstName(customer.getFirstName());
+		newCustomer.setLastName(customer.getLastName());
+		newCustomer.setEmail(customer.getEmail());
+		newCustomer.setAddress(customer.getAddress());
+		newCustomer.setActive(customer.getActive());
+		Customer customerSaved = customerRepo.save(newCustomer);
+		return customerSaved;
+	}
+
+	@PutMapping("alterCustomerByEmail/{email}")
+	public Customer alterCustomerByName(@PathVariable("email") String email) {
+
+	}
+
+//	Potential sakila mac issues
+//	@GetMapping("getAllStore")
+//	public Iterable<Store> getAllStore() {
+//		return storeRepo.findAll();
+//	}
+//
+//	@GetMapping("getAllStaff")
+//	public Iterable<Staff> getAllStaff() {
+//		return staffRepo.findAll();
+//	}
 }

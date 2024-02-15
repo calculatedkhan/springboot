@@ -1,2 +1,6 @@
-package com.example.imdb;public interface CustomerRepository {
+package com.example.imdb;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CustomerRepository extends JpaRepository<Customer,Integer>{
 }

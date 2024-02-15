@@ -1,4 +1,4 @@
-package com.example.imdb.Actor;
+package com.example.imdb;
 
 import com.example.imdb.Film;
 import com.fasterxml.jackson.annotation.JsonIgnore;

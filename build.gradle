@@ -21,8 +21,24 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.cucumber:cucumber-java:7.15.0'
+	testImplementation 'io.cucumber:cucumber-junit:7.15.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+
+	dependsOn assemble, testClasses doLast {
+		javaexec {
+			main = "io.cucumber.core.cli.Main"
+			classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+			args = ['--plugin', 'pretty', '--plugin', 'html:target/cucumber-report.html']
+		}
+	}
+}
+
+configurations {
+	cucumberRuntime {
+		extendsFrom testImplementation
+	}
 }

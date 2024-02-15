@@ -1,2 +1,6 @@
-package com.example.imdb;public interface StaffRepository {
+package com.example.imdb;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface StaffRepository extends JpaRepository<Staff,Integer> {
 }
