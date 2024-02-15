@@ -1,5 +1,6 @@
-package com.example.imdb;
+package com.example.imdb.Actor;
 
+import com.example.imdb.Film;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 

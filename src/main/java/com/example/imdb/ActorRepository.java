@@ -1,4 +1,4 @@
-package com.example.imdb;
+package com.example.imdb.Actor;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
