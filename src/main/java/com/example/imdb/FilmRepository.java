@@ -11,3 +11,5 @@ public interface FilmRepository extends JpaRepository<Film,Integer> {
     public List<Film> getFilmsInCategory(@Param("categoryName") String categoryName);
 
 }
+
+

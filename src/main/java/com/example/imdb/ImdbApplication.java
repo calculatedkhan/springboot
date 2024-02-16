@@ -175,8 +175,16 @@ public class ImdbApplication {
 	}
 
 	@PutMapping("alterCustomerByEmail/{email}")
-	public Customer alterCustomerByName(@PathVariable("email") String email) {
-
+	public Customer alterCustomerByName(@PathVariable("email") String email, @RequestBody Customer customer) {
+		Customer updateCustomer = new Customer();
+		updateCustomer = customerRepo.getCustomerByEmail(email);
+		updateCustomer.setFirstName(customer.getFirstName());
+		updateCustomer.setLastName(customer.getLastName());
+		updateCustomer.setEmail(customer.getEmail());
+		updateCustomer.setActive(customer.getActive());
+		updateCustomer.setAddress(customer.getAddress());
+		Customer updatedCustomer = customerRepo.save(updateCustomer);
+		return updatedCustomer;
 	}
 
 //	Potential sakila mac issues
